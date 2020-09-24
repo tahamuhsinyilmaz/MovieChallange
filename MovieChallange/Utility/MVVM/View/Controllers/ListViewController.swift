@@ -31,12 +31,15 @@ class ListViewController: UIViewController {
         bindTableView()
         bindCollectionView()
         bindTapActions()
+        bindSearchCompletion()
     }
+    
     private func setBackgroundColor(){
         self.view.backgroundColor = .systemBackground
     }
     
     private func createSearchBar(){
+        searchBar.delegate = viewModel
         searchBar.placeholder = Strings.shared.searchPlaceholder
         self.navigationItem.titleView = searchBar
     }
@@ -99,4 +102,24 @@ class ListViewController: UIViewController {
         }
     }
 
+    private func bindSearchCompletion(){
+        viewModel.searchCompletion = {
+            [weak self] in
+            self?.setSearchViewController()
+        }
+    }
+    
+    private func setSearchViewController() {
+        let searchVC = SearchViewController()
+        searchVC.modalPresentationStyle = .popover
+        guard let popoverPresentationController = searchVC.popoverPresentationController else {return}
+        popoverPresentationController.permittedArrowDirections = .up
+        popoverPresentationController.sourceView = searchBar
+        popoverPresentationController.sourceRect = searchBar.frame
+        popoverPresentationController.delegate = searchVC.viewModel
+        searchVC.preferredContentSize = CGSize(width: self.view.frame.width, height: 350)
+        viewModel.searchDelegate = searchVC.viewModel
+        self.present(searchVC, animated: true, completion: nil)
+    }
+    
 }

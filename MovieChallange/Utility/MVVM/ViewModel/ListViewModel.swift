@@ -12,6 +12,9 @@ class ListViewModel: NSObject{
     var upcomingPlayingCompletion: (()->())!
     var createColletionCompletion: (()->UIView)!
     var tapCellCompletion: ((_ movieId: Int?)->())!
+    var searchCompletion: (()->())?
+    var searchDelegate: SearchDelegate!
+    
     private var nowPlayingDataSource: [Movie]?{
         didSet{
             nowPlayingCompletion()
@@ -100,4 +103,44 @@ extension ListViewModel: UICollectionViewDelegate, UICollectionViewDataSource, U
         tapCellCompletion(nowPlayingDataSource?[indexPath.row].id)
     }
     
+}
+
+
+extension ListViewModel: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if let text = searchBar.text, text.count >= 2 {
+            searchBar.showsCancelButton = true
+            self.searchDelegate.searchText(text: text)
+        }else{
+            
+        }
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        guard let searchCompletion = self.searchCompletion else {return}
+        searchCompletion()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.endEditing(true)
+    }
+    
+}
+
+extension SearchViewModel : UIPopoverPresentationControllerDelegate{
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+        
+    }
+    
+    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+        return true
+        
+    }
 }

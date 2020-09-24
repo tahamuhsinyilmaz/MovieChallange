@@ -84,4 +84,22 @@ class APIService{
             }
         }
     }
+    
+    func fetchSearchResult(text: String, completion: @escaping (_ data : MoviesResponse?, _ error: Error?)-> Void){
+        let url = Constants.shared.endPoint + Constants.shared.search + "?query=\(text)"
+        NetworkHandler.sendRequest(url: url) { (data, error) in
+            guard let data = data?.data else {
+                completion(nil, nil)
+                return
+            }
+            do {
+                let object = try JSONDecoder().decode(MoviesResponse.self, from: data)
+                completion(object,nil)
+                
+            }catch let error {
+                print(error.localizedDescription)
+                completion(nil, error)
+            }
+        }
+    }
 }

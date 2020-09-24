@@ -31,22 +31,23 @@ class SimilarMoviesCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            imageView.heightAnchor.constraint(equalToConstant: 120),
-            imageView.heightAnchor.constraint(equalToConstant: 100),
             imageView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            imageView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 80),
+            imageView.widthAnchor.constraint(equalToConstant: 80),
         ])
     }
     
     private func createLabel(){
+        label.numberOfLines = 0
         self.contentView.addSubview(label)
+        label.textColor = .systemBackground
         label.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
             label.topAnchor.constraint(equalTo: self.imageView.bottomAnchor),
-            label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
         ])
     }
     
@@ -67,6 +68,8 @@ class SimilarMoviesCollectionViewCell: UICollectionViewCell {
     }
     
     private func updateLabel(title: String, date: String){
-        label.text = title + "\n" + date
+        let dateComponents = date.split(separator: "-")
+        let year = dateComponents.first ?? ""
+        label.text = "\(title)\n(\(year))"
     }
 }

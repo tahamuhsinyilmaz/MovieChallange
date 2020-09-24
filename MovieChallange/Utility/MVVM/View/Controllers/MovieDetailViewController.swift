@@ -48,6 +48,7 @@ class MovieDetailViewController: UIViewController {
         createSameMoviesCollectionView()
         bindMovieDetailData()
         bindSimilarMoviesData()
+        bindTapAction()
     }
     
     private func setBackgroundColor(){
@@ -78,6 +79,7 @@ class MovieDetailViewController: UIViewController {
     }
     
     private func createDescriptionTextView(){
+        descriptionTextView.backgroundColor = .systemBackground
         descriptionTextView.isEditable = false
         self.view.addSubview(descriptionTextView)
         descriptionTextView.text = "ajldfhı d  f sasdohışf ş"
@@ -165,8 +167,8 @@ class MovieDetailViewController: UIViewController {
     private func createSameMoviesCollectionView(){
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 10
         similarMoviesCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
-        layout.itemSize = CGSize(width: 120, height: similarMoviesCollectionView.frame.size.height)
         similarMoviesCollectionView.delegate = viewModel
         similarMoviesCollectionView.dataSource = viewModel
         similarMoviesCollectionView.register(SimilarMoviesCollectionViewCell.self, forCellWithReuseIdentifier: "SimilarMoviesCollectionViewCell")
@@ -177,7 +179,7 @@ class MovieDetailViewController: UIViewController {
             similarMoviesCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             similarMoviesCollectionView.topAnchor.constraint(equalTo: self.similarMoviewLabel.bottomAnchor),
             similarMoviesCollectionView.heightAnchor.constraint(equalToConstant: self.view.frame.height/5),
-            similarMoviesCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            similarMoviesCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -50)
         ])
     }
     
@@ -193,6 +195,13 @@ class MovieDetailViewController: UIViewController {
         viewModel.similarMoviesCompletion = {
             [weak self] () in
             self?.similarMoviesCollectionView.reloadData()
+        }
+    }
+    
+    private func bindTapAction(){
+        viewModel.tapCompletion = {
+            [weak self] (movie) in
+            self?.showDetail(movieId: movie?.id)
         }
     }
     
@@ -212,5 +221,10 @@ class MovieDetailViewController: UIViewController {
     
     private func updateDescription(description: String){
         descriptionTextView.text = description
+    }
+    
+    private func showDetail(movieId: Int?){
+        let detailVC = MovieDetailViewController(movieId: movieId)
+        self.show(detailVC, sender: self)
     }
 }

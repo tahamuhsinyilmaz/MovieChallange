@@ -17,4 +17,5 @@ class Constants{
     let baseImageUrl : String = "https://image.tmdb.org/t/p/w500"
     let movieDetail: String = "/movie/"
     let similarMovies: String = "/similar"
+    let search: String = "/search/movie"
 }

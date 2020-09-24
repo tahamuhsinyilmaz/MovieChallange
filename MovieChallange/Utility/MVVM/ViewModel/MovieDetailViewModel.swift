@@ -8,6 +8,7 @@
 import UIKit
 
 class MovieDetailViewModel: NSObject{
+    var tapCompletion: ((Movie?)->())?
     var movieDetailCompletion: ((_ path: String, _ title: String, _ description: String)->())?
     var similarMoviesCompletion: (()->())?
     var movieId: Int?
@@ -57,7 +58,7 @@ class MovieDetailViewModel: NSObject{
     }
 }
 
-extension MovieDetailViewModel: UICollectionViewDataSource, UICollectionViewDelegate{
+extension MovieDetailViewModel: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return similarMovies?.count ?? 0
     }
@@ -67,4 +68,14 @@ extension MovieDetailViewModel: UICollectionViewDataSource, UICollectionViewDele
         cell.viewModel.movie = self.similarMovies?[indexPath.row]
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 120, height: collectionView.frame.height-10)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let tapCompletion = self.tapCompletion else {return}
+        tapCompletion(similarMovies?[indexPath.row])
+    }
+    
 }
