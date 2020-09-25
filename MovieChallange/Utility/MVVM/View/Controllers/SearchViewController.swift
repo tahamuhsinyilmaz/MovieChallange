@@ -10,7 +10,7 @@ import UIKit
 class SearchViewController: UIViewController {
 
     let viewModel = SearchViewModel()
-    let tableView = UITableView()
+    private let tableView = UITableView()
     
     init(){
         super.init(nibName: nil, bundle: nil)
@@ -26,9 +26,14 @@ class SearchViewController: UIViewController {
     }
     
     private func setupUI(){
+        setView()
         setTableView()
         bindTableView()
         bindTapCompletion()
+    }
+    
+    private func setView(){
+        self.view.backgroundColor = .clear
     }
     
     private func setTableView(){
@@ -39,9 +44,8 @@ class SearchViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
             tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            tableView.heightAnchor.constraint(equalToConstant: 1.5*self.view.frame.height/3)
         ])
     }
     
@@ -56,7 +60,7 @@ class SearchViewController: UIViewController {
         viewModel.tapCompletion = {
             [weak self] (movieId) in
             let detailVC = MovieDetailViewController(movieId: movieId)
-            self?.present(detailVC, animated: true, completion: nil)
+            self?.show(detailVC, sender: self)
         }
     }
 

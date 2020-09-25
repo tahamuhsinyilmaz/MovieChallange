@@ -9,18 +9,18 @@ import UIKit
 
 class MovieDetailViewController: UIViewController {
     
-    let imageView = UIImageView()
-    let titleLabel = UILabel()
-    let descriptionTextView = UITextView()
-    let imdbView = UIView()
-    let line = UIView()
-    let similarMoviewLabel = UILabel()
-    let imdbButton = UIButton()
-    let dateLabel = UILabel()
-    let starLabel = UILabel()
-    var similarMoviesCollectionView: UICollectionView!
-    
-    var viewModel: MovieDetailViewModel!
+    private let imageView = UIImageView()
+    private let titleLabel = UILabel()
+    private let descriptionTextView = UITextView()
+    private let imdbView = UIView()
+    private let line = UIView()
+    private let similarMoviewLabel = UILabel()
+    private let imdbButton = UIButton()
+    private let dateLabel = UILabel()
+    private let starLabel = UILabel()
+    private var imdbId = ""
+    private var similarMoviesCollectionView: UICollectionView!
+    private var viewModel: MovieDetailViewModel!
     
     init(movieId: Int?) {
         super.init(nibName: nil, bundle: nil)
@@ -49,6 +49,7 @@ class MovieDetailViewController: UIViewController {
         bindMovieDetailData()
         bindSimilarMoviesData()
         bindTapAction()
+        bindImdbCompletion()
     }
     
     private func setBackgroundColor(){
@@ -56,7 +57,6 @@ class MovieDetailViewController: UIViewController {
     }
     
     private func createImageView(){
-        imageView.backgroundColor = .blue
         self.view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -68,26 +68,26 @@ class MovieDetailViewController: UIViewController {
     }
     
     private func createTitleLabel(){
-        titleLabel.text = "adfhajskd "
         self.view.addSubview(titleLabel)
+        titleLabel.font = .boldSystemFont(ofSize: 21)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            titleLabel.topAnchor.constraint(equalTo: self.imageView.bottomAnchor)
+            titleLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            titleLabel.topAnchor.constraint(equalTo: self.imageView.bottomAnchor, constant: 10)
         ])
     }
     
     private func createDescriptionTextView(){
         descriptionTextView.backgroundColor = .systemBackground
         descriptionTextView.isEditable = false
+        descriptionTextView.font = .systemFont(ofSize: 18)
         self.view.addSubview(descriptionTextView)
-        descriptionTextView.text = "ajldfhı d  f sasdohışf ş"
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            descriptionTextView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            descriptionTextView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            descriptionTextView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
+            descriptionTextView.leadingAnchor.constraint(equalTo: self.titleLabel.leadingAnchor),
+            descriptionTextView.trailingAnchor.constraint(equalTo: self.titleLabel.trailingAnchor),
+            descriptionTextView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 10),
         ])
     }
     
@@ -97,47 +97,47 @@ class MovieDetailViewController: UIViewController {
         NSLayoutConstraint.activate([
             imdbView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             imdbView.topAnchor.constraint(equalTo: self.descriptionTextView.bottomAnchor),
+            imdbView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             imdbView.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         imdbButton.setImage(UIImage(named: "imdbImage"), for: .normal)
+        imdbButton.addTarget(self, action: #selector(imdbButtonAction), for: .touchUpInside)
         imdbView.addSubview(imdbButton)
         imdbButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            imdbButton.widthAnchor.constraint(equalToConstant: 30),
+            imdbButton.widthAnchor.constraint(equalToConstant: 80),
             imdbButton.topAnchor.constraint(equalTo: imdbView.topAnchor),
             imdbButton.bottomAnchor.constraint(equalTo: imdbView.bottomAnchor),
-            imdbButton.trailingAnchor.constraint(equalTo: imdbView.trailingAnchor)
+            imdbButton.trailingAnchor.constraint(equalTo: imdbView.trailingAnchor, constant: -10)
         ])
         
         self.imdbView.addSubview(dateLabel)
-        dateLabel.text = "afaoshdf "
+        dateLabel.font = .systemFont(ofSize: 10)
+        dateLabel.textColor = .lightGray
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            dateLabel.widthAnchor.constraint(equalToConstant: 30),
-            dateLabel.trailingAnchor.constraint(equalTo: imdbButton.leadingAnchor),
-            dateLabel.topAnchor.constraint(equalTo: imdbView.topAnchor),
-            dateLabel.bottomAnchor.constraint(equalTo: imdbView.bottomAnchor)
+            dateLabel.trailingAnchor.constraint(equalTo: imdbButton.leadingAnchor, constant: -10),
+            dateLabel.centerYAnchor.constraint(equalTo: imdbView.centerYAnchor)
         ])
         
         self.imdbView.addSubview(starLabel)
-        starLabel.text = "kdjascg ads c "
+        starLabel.font = .systemFont(ofSize: 10)
+        starLabel.textColor = .lightGray
         starLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            starLabel.widthAnchor.constraint(equalToConstant: 15),
-            starLabel.trailingAnchor.constraint(equalTo: dateLabel.leadingAnchor),
-            starLabel.topAnchor.constraint(equalTo: imdbView.topAnchor),
-            starLabel.bottomAnchor.constraint(equalTo: imdbView.bottomAnchor)
+            starLabel.trailingAnchor.constraint(equalTo: dateLabel.leadingAnchor, constant: -10),
+            starLabel.centerYAnchor.constraint(equalTo: imdbView.centerYAnchor)
         ])
         
         let starImageView = UIImageView(image: UIImage(named: "star"))
         self.imdbView.addSubview(starImageView)
         starImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            starImageView.widthAnchor.constraint(equalToConstant: 30),
-            starImageView.topAnchor.constraint(equalTo: imdbView.topAnchor),
-            starImageView.bottomAnchor.constraint(equalTo: imdbView.bottomAnchor),
-            starImageView.trailingAnchor.constraint(equalTo: starLabel.leadingAnchor)
+            starImageView.widthAnchor.constraint(equalToConstant: 25),
+            starImageView.heightAnchor.constraint(equalToConstant: 25),
+            starImageView.centerYAnchor.constraint(equalTo: imdbView.centerYAnchor),
+            starImageView.trailingAnchor.constraint(equalTo: starLabel.leadingAnchor, constant: -5)
         ])
     }
     
@@ -148,19 +148,21 @@ class MovieDetailViewController: UIViewController {
         NSLayoutConstraint.activate([
             line.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             line.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            line.topAnchor.constraint(equalTo: self.imdbView.bottomAnchor),
+            line.topAnchor.constraint(equalTo: self.imdbView.bottomAnchor, constant: 20),
             line.heightAnchor.constraint(equalToConstant: 1)
         ])
     }
     
     private func createSameMoviesLabel(){
         similarMoviewLabel.text = Strings.shared.sameMovies
+        similarMoviewLabel.textColor = .gray
+        similarMoviewLabel.font = .systemFont(ofSize: 20)
         self.view.addSubview(similarMoviewLabel)
         similarMoviewLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            similarMoviewLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            similarMoviewLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
             similarMoviewLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            similarMoviewLabel.topAnchor.constraint(equalTo: self.line.bottomAnchor)
+            similarMoviewLabel.topAnchor.constraint(equalTo: self.line.bottomAnchor, constant: 20)
         ])
     }
     
@@ -171,23 +173,24 @@ class MovieDetailViewController: UIViewController {
         similarMoviesCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         similarMoviesCollectionView.delegate = viewModel
         similarMoviesCollectionView.dataSource = viewModel
+        similarMoviesCollectionView.backgroundColor = .systemBackground
         similarMoviesCollectionView.register(SimilarMoviesCollectionViewCell.self, forCellWithReuseIdentifier: "SimilarMoviesCollectionViewCell")
         self.view.addSubview(similarMoviesCollectionView)
         similarMoviesCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            similarMoviesCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            similarMoviesCollectionView.leadingAnchor.constraint(equalTo: self.similarMoviewLabel.leadingAnchor),
             similarMoviesCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            similarMoviesCollectionView.topAnchor.constraint(equalTo: self.similarMoviewLabel.bottomAnchor),
+            similarMoviesCollectionView.topAnchor.constraint(equalTo: self.similarMoviewLabel.bottomAnchor, constant: 10),
             similarMoviesCollectionView.heightAnchor.constraint(equalToConstant: self.view.frame.height/5),
-            similarMoviesCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -50)
+            similarMoviesCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
     }
     
     
     private func bindMovieDetailData(){
         viewModel.movieDetailCompletion = {
-            [weak self] (path, title, description)in
-            self?.updateUI(path: path, title: title, description: description)
+            [weak self] (path, title, description, date, rate)in
+            self?.updateUI(path: path, title: title, description: description, date: date, rate: rate)
         }
     }
     
@@ -205,10 +208,19 @@ class MovieDetailViewController: UIViewController {
         }
     }
     
-    private func updateUI(path: String, title: String, description: String){
+    private func bindImdbCompletion(){
+        viewModel.imdbIdCompletion = {
+            [weak self] (imdbId) in
+            self?.imdbId = imdbId
+        }
+    }
+    
+    private func updateUI(path: String, title: String, description: String, date: String, rate: String){
         updateImageView(path: path)
         updateTitle(title: title)
         updateDescription(description: description)
+        updateDateLabel(date: date)
+        updateStarLabel(rate: rate)
     }
     
     private func updateImageView(path: String){
@@ -226,5 +238,24 @@ class MovieDetailViewController: UIViewController {
     private func showDetail(movieId: Int?){
         let detailVC = MovieDetailViewController(movieId: movieId)
         self.show(detailVC, sender: self)
+    }
+    
+    private func updateStarLabel(rate: String){
+        starLabel.text = rate
+    }
+    
+    private func updateDateLabel(date: String){
+        let dateComponents = date.split(separator: "-")
+        let year = dateComponents.first ?? ""
+        var month: String = ""
+        if !dateComponents.isEmpty { month = String(dateComponents[1])}
+        let day = dateComponents.last ?? ""
+        dateLabel.text = "\(day).\(month).\(year)"
+    }
+    
+    @objc private func imdbButtonAction(){
+        let urlString = Constants.shared.imdbEndPoint + imdbId
+        guard let url = URL(string: urlString) else {return}
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }

@@ -30,6 +30,8 @@ class SimilarMoviesCollectionViewCell: UICollectionViewCell {
     private func createImageView(){
         self.contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 5
+        imageView.clipsToBounds = true
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             imageView.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor),
@@ -40,11 +42,11 @@ class SimilarMoviesCollectionViewCell: UICollectionViewCell {
     
     private func createLabel(){
         label.numberOfLines = 0
+        label.textColor = .lightGray
         self.contentView.addSubview(label)
-        label.textColor = .systemBackground
         label.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            label.leadingAnchor.constraint(equalTo: self.imageView.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
             label.topAnchor.constraint(equalTo: self.imageView.bottomAnchor),
             label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)

@@ -29,9 +29,10 @@ class SearchTableViewCell: UITableViewCell{
     
     private func createLabel(){
         self.contentView.addSubview(label)
+        label.font = .systemFont(ofSize: 17)
         label.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            label.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 30),
             label.trailingAnchor.constraint(equalTo: self.arrowImageView.leadingAnchor),
             label.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
@@ -43,9 +44,9 @@ class SearchTableViewCell: UITableViewCell{
         self.contentView.addSubview(arrowImageView)
         arrowImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            arrowImageView.heightAnchor.constraint(equalToConstant: 30),
-            arrowImageView.widthAnchor.constraint(equalToConstant: 30),
-            arrowImageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            arrowImageView.heightAnchor.constraint(equalToConstant: 20),
+            arrowImageView.widthAnchor.constraint(equalToConstant: 10),
+            arrowImageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -30),
             arrowImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor)
         ])
     }

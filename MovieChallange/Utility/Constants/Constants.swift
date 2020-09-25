@@ -12,6 +12,7 @@ class Constants{
     
     let endPoint: String = "https://api.themoviedb.org/3"
     let apiKey: String = "ebe002c21f8d6f99dfd0be2652a4bf44"
+    let imdbEndPoint = "https://www.imdb.com/title/"
     let nowPlaying: String = "/movie/now_playing"
     let upcoming: String = "/movie/upcoming"
     let baseImageUrl : String = "https://image.tmdb.org/t/p/w500"

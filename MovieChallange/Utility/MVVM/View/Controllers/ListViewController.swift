@@ -13,6 +13,9 @@ class ListViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var topCollectionView: UICollectionView!
+    private let pageControl = UIPageControl()
+    private let headerView = UIView()
+    private let searchVC = SearchViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +27,8 @@ class ListViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = false
     }
     
+    
+    
     private func initViewController(){
         setBackgroundColor()
         createSearchBar()
@@ -32,6 +37,9 @@ class ListViewController: UIViewController {
         bindCollectionView()
         bindTapActions()
         bindSearchCompletion()
+        bindWillDisplayCompletion()
+        bindPopoverDidDismiss()
+        bindEndSearchCompletion()
     }
     
     private func setBackgroundColor(){
@@ -54,9 +62,18 @@ class ListViewController: UIViewController {
         topCollectionView.dataSource = viewModel
         topCollectionView.backgroundColor = .white
         topCollectionView.isPagingEnabled = true
-        topCollectionView.register(MovieListCollectionViewCell.self,
-                                   forCellWithReuseIdentifier: "MovieListCollectionViewCell")
-        return topCollectionView
+        topCollectionView.register(MovieListCollectionViewCell.self, forCellWithReuseIdentifier: "MovieListCollectionViewCell")
+    
+        headerView.addSubview(topCollectionView)
+        topCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            topCollectionView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
+            topCollectionView.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
+            topCollectionView.topAnchor.constraint(equalTo: headerView.topAnchor),
+            topCollectionView.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
+        ])
+        createPageControl()
+        return headerView
     }
     
     private func createTableView(){
@@ -71,6 +88,19 @@ class ListViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+    
+    private func createPageControl(){
+        self.headerView.addSubview(pageControl)
+        pageControl.isUserInteractionEnabled = false
+        pageControl.numberOfPages = topCollectionView.numberOfItems(inSection: 0)
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pageControl.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
+            pageControl.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
+            pageControl.widthAnchor.constraint(equalToConstant: 150),
+            pageControl.heightAnchor.constraint(equalToConstant: 70)
         ])
     }
     
@@ -110,16 +140,36 @@ class ListViewController: UIViewController {
     }
     
     private func setSearchViewController() {
-        let searchVC = SearchViewController()
-        searchVC.modalPresentationStyle = .popover
-        guard let popoverPresentationController = searchVC.popoverPresentationController else {return}
-        popoverPresentationController.permittedArrowDirections = .up
-        popoverPresentationController.sourceView = searchBar
-        popoverPresentationController.sourceRect = searchBar.frame
-        popoverPresentationController.delegate = searchVC.viewModel
-        searchVC.preferredContentSize = CGSize(width: self.view.frame.width, height: 350)
         viewModel.searchDelegate = searchVC.viewModel
-        self.present(searchVC, animated: true, completion: nil)
+        searchVC.modalPresentationStyle = .popover
+        self.addChild(searchVC)
+        self.view.addSubview(searchVC.view)
+        searchVC.didMove(toParent: self)
+    }
+    
+    private func bindWillDisplayCompletion(){
+        viewModel.willDisplayCompletion = {
+            [weak self] in
+            for cell in self!.topCollectionView.visibleCells {
+                let indexPath = self?.topCollectionView.indexPath(for: cell)
+                self?.pageControl.currentPage = indexPath?.row ?? 0
+            }
+        }
+    }
+    
+    private func bindPopoverDidDismiss(){
+        viewModel.popOverDidDismissCompletion = {
+            [weak self] in
+            self?.searchBar.endEditing(true)
+            self?.searchBar.showsCancelButton = false
+        }
+    }
+    
+    private func bindEndSearchCompletion(){
+        viewModel.searchEndedCompletion = {
+            [weak self] in
+            self?.searchVC.view.removeFromSuperview()
+        }
     }
     
 }

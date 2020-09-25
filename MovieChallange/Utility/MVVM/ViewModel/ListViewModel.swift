@@ -12,7 +12,10 @@ class ListViewModel: NSObject{
     var upcomingPlayingCompletion: (()->())!
     var createColletionCompletion: (()->UIView)!
     var tapCellCompletion: ((_ movieId: Int?)->())!
+    var willDisplayCompletion: (()->())!
     var searchCompletion: (()->())?
+    var popOverDidDismissCompletion: (()->())!
+    var searchEndedCompletion: (()->())!
     var searchDelegate: SearchDelegate!
     
     private var nowPlayingDataSource: [Movie]?{
@@ -103,6 +106,13 @@ extension ListViewModel: UICollectionViewDelegate, UICollectionViewDataSource, U
         tapCellCompletion(nowPlayingDataSource?[indexPath.row].id)
     }
     
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        willDisplayCompletion()
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        willDisplayCompletion()
+    }
 }
 
 
@@ -122,25 +132,14 @@ extension ListViewModel: UISearchBarDelegate {
         searchCompletion()
     }
     
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchEndedCompletion()
+    }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
         searchBar.showsCancelButton = false
         searchBar.endEditing(true)
     }
     
-}
-
-extension SearchViewModel : UIPopoverPresentationControllerDelegate{
-    
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .none
-    }
-    
-    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        
-    }
-    
-    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
-        return true
-        
-    }
 }

@@ -9,8 +9,9 @@ import UIKit
 
 class MovieDetailViewModel: NSObject{
     var tapCompletion: ((Movie?)->())?
-    var movieDetailCompletion: ((_ path: String, _ title: String, _ description: String)->())?
+    var movieDetailCompletion: ((_ path: String, _ title: String, _ description: String, _ date: String, _ rate: String)->())?
     var similarMoviesCompletion: (()->())?
+    var imdbIdCompletion: ((_ imdbId: String)->())!
     var movieId: Int?
     var similarMovies: [Movie]?
     var similarMoviesResponse: MoviesResponse!{
@@ -25,7 +26,9 @@ class MovieDetailViewModel: NSObject{
             let imagePath = movieDetail.poster_path ?? ""
             let title = movieDetail.title ?? ""
             let description = movieDetail.overview ?? ""
-            movieDetailCompletion(imagePath, title, description)
+            let date = movieDetail.release_date ?? ""
+            let rate = String(movieDetail.vote_average ?? 0) 
+            movieDetailCompletion(imagePath, title, description, date, rate)
         }
     }
     
@@ -40,6 +43,7 @@ class MovieDetailViewModel: NSObject{
         APIService.shared.fetchMovieDetail(movieId: movieId) { (movieDetail, error) in
             if error == nil{
                 self.movieDetail = movieDetail
+                self.imdbIdCompletion(movieDetail?.imdb_id ?? "")
             }else{
                 
             }
